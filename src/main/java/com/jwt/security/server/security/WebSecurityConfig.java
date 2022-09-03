@@ -1,5 +1,6 @@
-package com.security.example.demo;
+package com.jwt.security.server.security;
 
+import com.jwt.security.server.security.filter.JwtTokenFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -22,7 +23,7 @@ import java.util.Collections;
 public class WebSecurityConfig {
 
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
+  public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtTokenFilter jwtTokenFilter) throws Exception {
     http
         .sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -48,15 +49,15 @@ public class WebSecurityConfig {
         .httpBasic()
 
         .and()
-        .addFilterBefore(jwtFilter, AnonymousAuthenticationFilter.class);
+        .addFilterBefore(jwtTokenFilter, AnonymousAuthenticationFilter.class);
 
     return http.build();
   }
 
 
   @Bean
-  public JwtFilter getJwtFilter(UserDetailsService userDetailsService) {
-    return new JwtFilter(userDetailsService);
+  public JwtTokenFilter getJwtFilter(UserDetailsService userDetailsService) {
+    return new JwtTokenFilter(userDetailsService);
   }
 
   @Bean

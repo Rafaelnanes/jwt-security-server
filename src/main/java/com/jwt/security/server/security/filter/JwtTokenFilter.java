@@ -1,4 +1,4 @@
-package com.security.example.demo;
+package com.jwt.security.server.security.filter;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @AllArgsConstructor
-public class JwtFilter extends OncePerRequestFilter {
+public class JwtTokenFilter extends OncePerRequestFilter {
 
   private final UserDetailsService userDetailsService;
 
