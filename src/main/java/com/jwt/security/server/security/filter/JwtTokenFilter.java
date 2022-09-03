@@ -1,5 +1,7 @@
 package com.jwt.security.server.security.filter;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.jwt.security.server.service.TokenService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,18 +22,20 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
   private final UserDetailsService userDetailsService;
 
+  private final TokenService tokenService;
+
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
     String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
     if (StringUtils.hasText(authorization) && authorization.startsWith("Bearer ")) {
-      String payload = authorization.split("\\.")[1];
-      if ("BBB".equals(payload)) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername("myUser");
-        SecurityContextHolder.getContext().setAuthentication(
-            new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(),
-                userDetails.getAuthorities()));
-      }
+      String token = authorization.split(" ")[1];
+      DecodedJWT jwt = tokenService.verify(token);
+      String subject = jwt.getSubject();
+      UserDetails userDetails = userDetailsService.loadUserByUsername(subject);
+      SecurityContextHolder.getContext().setAuthentication(
+          new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword(),
+              userDetails.getAuthorities()));
 
     }
     filterChain.doFilter(request, response);
